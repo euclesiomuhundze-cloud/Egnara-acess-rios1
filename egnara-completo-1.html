@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egnara Acessórios - Loja & Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --gold: #D4AF37;
+            --dark: #1A1A1A;
+            --dark-light: #2D2D2D;
+            --success: #25D366;
+            --danger: #ff4444;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--dark);
+            color: white;
+        }
+        
+        /* Header */
+        header {
+            background: var(--dark-light);
+            padding: 1rem 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.5);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+        
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .btn-admin, .btn-cart {
+            background: var(--gold);
+            color: var(--dark);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .btn-cart {
+            position: relative;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Hero */
+        .hero {
+            margin-top: 80px;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        
+        /* Products */
+        .section {
+            padding: 3rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 2rem;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+        
+        .product-card {
+            background: var(--dark-light);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #222;
+        }
+        
+        .product-video {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 1.5rem;
+        }
+        
+        .product-category {
+            color: var(--gold);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-name {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-price {
+            color: var(--gold);
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-add-cart {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: var(--dark-light);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+            transition: right 0.3s;
+            z-index: 2000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .cart-sidebar.open {
+            right: 0;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+        }
+        
+        .cart-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .cart-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+        
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .cart-item-info {
+            flex: 1;
+        }
+        
+        .cart-item-qty {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            background: var(--dark);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .cart-total {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--gold);
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .btn-checkout {
+            width: 100%;
+            padding: 1rem;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-option {
+            cursor: pointer;
+        }
+        
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+        
+        .payment-card {
+            background: var(--dark);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+        
+        .payment-option input[type="radio"]:checked + .payment-card {
+            border-color: var(--gold);
+            background: rgba(212,175,55,0.1);
+        }
+        
+        .payment-card:hover {
+            border-color: var(--gold);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--dark-light);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal h2 {
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--dark);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            color: white;
+            font-family: Arial;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--gold);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload input {
+            display: none;
+        }
+        
+        .preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 1rem auto;
+            display: none;
+            border-radius: 8px;
+        }
+        
+        .preview.active {
+            display: block;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--gold);
+            color: var(--dark);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+        }
+        
+        .error {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 1rem;
+            display: none;
+        }
+        
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            margin-top: 80px;
+            min-height: 100vh;
+        }
+        
+        .admin-panel.active {
+            display: flex;
+        }
+        
+        .admin-sidebar {
+            width: 250px;
+            background: var(--dark-light);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .admin-menu {
+            list-style: none;
+        }
+        
+        .admin-menu li {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .admin-menu li:hover,
+        .admin-menu li.active {
+            background: rgba(212,175,55,0.1);
+            border-left-color: var(--gold);
+            color: var(--gold);
+        }
+        
+        .admin-main {
+            flex: 1;
+            padding: 2rem 5%;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--gold);
+        }
+        
+        .admin-header h1 {
+            color: var(--gold);
+        }
+        
+        .btn-logout {
+            background: var(--danger);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--dark-light);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(212,175,55,0.2);
+        }
+        
+        .stat-label {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+        
+        /* Admin Sections */
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        /* Table */
+        table {
+            width: 100%;
+            background: var(--dark-light);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: rgba(212,175,55,0.2);
+            color: var(--gold);
+        }
+        
+        .product-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gold);
+            color: var(--dark);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 9999;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* WhatsApp Float Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--success);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">EGNARA ACESSÓRIOS</div>
+            <div class="nav-right">
+                <button class="btn-admin" onclick="openLogin()">👤 Admin</button>
+                <button class="btn-cart" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Store View -->
+    <div id="storeView">
+        <section class="hero">
+            <div>
+                <h1>Elegância Inoxidável</h1>
+                <p>Acessórios de aço inoxidável premium</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Nossa Coleção</h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </section>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" class="admin-panel">
+        <aside class="admin-sidebar">
+            <ul class="admin-menu">
+                <li class="active" onclick="showSection('dashboard')">📊 Dashboard</li>
+                <li onclick="showSection('products')">💎 Produtos</li>
+                <li onclick="showSection('orders')">📦 Pedidos</li>
+                <li onclick="showSection('settings')">⚙️ Configurações</li>
+            </ul>
+        </aside>
+        
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1 id="sectionTitle">Dashboard</h1>
+                <button class="btn-logout" onclick="logout()">🚪 Sair</button>
+            </div>
+            
+            <!-- Dashboard -->
+            <div id="dashboard" class="admin-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total de Produtos</div>
+                        <div class="stat-value" id="statProducts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Pedidos</div>
+                        <div class="stat-value" id="statOrders">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Vendas Totais</div>
+                        <div class="stat-value" id="statSales">MZN 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Produtos no Carrinho</div>
+                        <div class="stat-value" id="statCart">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Products -->
+            <div id="products" class="admin-section">
+                <button class="btn" onclick="openProductModal()" style="max-width: 300px; margin-bottom: 2rem;">+ Adicionar Produto</button>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Preço</th>
+                            <th>Estoque</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTable"></tbody>
+                </table>
+            </div>
+            
+            <!-- Orders -->
+            <div id="orders" class="admin-section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Cliente</th>
+                            <th>Produtos</th>
+                            <th>Total</th>
+                            <th>Pagamento</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTable"></tbody>
+                </table>
+            </div>
+            
+            <!-- Settings -->
+            <div id="settings" class="admin-section">
+                <h3 style="color: var(--gold); margin-bottom: 1rem;">Configurações da Loja</h3>
+                <div class="form-group">
+                    <label>Nome da Loja</label>
+                    <input type="text" id="storeName" value="EGNARA ACESSÓRIOS">
+                </div>
+                <div class="form-group">
+                    <label>WhatsApp</label>
+                    <input type="text" id="storePhone" value="+258 848066198">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="storeEmail" value="contato@egnara.co.mz">
+                </div>
+                
+                <h3 style="color: var(--gold); margin: 2rem 0 1rem;">Métodos de Pagamento</h3>
+                
+                <div class="form-group">
+                    <label>Número M-Pesa</label>
+                    <input type="text" id="mpesaNumber" value="+258 848066198" placeholder="+258 8XXXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label>Número eMola</label>
+                    <input type="text" id="emolaNumber" value="+258 848066198" placeholder="+258 8XXXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label>Nome do Beneficiário (M-Pesa/eMola)</label>
+                    <input type="text" id="beneficiaryName" value="Egnara Acessórios">
+                </div>
+                
+                <button class="btn" onclick="saveSettings()" style="max-width: 300px;">💾 Salvar Configurações</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h2>Carrinho</h2>
+            <button class="cart-close" onclick="toggleCart()">✕</button>
+        </div>
+        <div id="cartItems"></div>
+        <div class="cart-total">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cartTotal">MZN 0</span>
+            </div>
+            
+            <div style="margin: 1.5rem 0;">
+                <h3 style="color: var(--gold); margin-bottom: 1rem; font-size: 1rem;">Método de Pagamento:</h3>
+                <div class="payment-methods">
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="whatsapp" checked>
+                        <div class="payment-card">
+                            <span style="font-size: 1.5rem;">💬</span>
+                            <span>WhatsApp</span>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="mpesa">
+                        <div class="payment-card">
+                            <span style="font-size: 1.5rem;">📱</span>
+                            <span>M-Pesa</span>
+                        </div>
+                    </label>
+                    <label class="payment-option">
+                        <input type="radio" name="payment" value="emola">
+                        <div class="payment-card">
+                            <span style="font-size: 1.5rem;">💳</span>
+                            <span>eMola</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <button class="btn-checkout" onclick="checkout()">✅ Finalizar Pedido</button>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Login Admin</h2>
+            <form onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="error" id="loginError">Email ou senha incorretos</div>
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <h2 id="paymentTitle">Pagamento</h2>
+            <div id="paymentContent">
+                <!-- Conteúdo dinâmico -->
+            </div>
+            <button class="btn" onclick="confirmPayment()">✅ Confirmar Pedido</button>
+            <button class="btn btn-secondary" onclick="closePaymentModal()">Voltar</button>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <h2 id="productModalTitle">Adicionar Produto</h2>
+            <form onsubmit="return saveProduct(event)">
+                <div class="form-group">
+                    <label>Tipo de Mídia</label>
+                    <select id="mediaType" onchange="updateMediaInput()">
+                        <option value="image">Imagem</option>
+                        <option value="video">Vídeo</option>
+                    </select>
+                </div>
+                
+                <div class="file-upload" onclick="document.getElementById('mediaFile').click()">
+                    <input type="file" id="mediaFile" accept="image/*,video/*" onchange="previewMedia(this)">
+                    <div id="uploadText">📁 Clique para adicionar foto ou vídeo</div>
+                    <img id="imagePreview" class="preview">
+                    <video id="videoPreview" class="preview" controls></video>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nome do Produto</label>
+                    <input type="text" id="productName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoria</label>
+                    <select id="productCategory" required>
+                        <option value="colares">Colares</option>
+                        <option value="pulseiras">Pulseiras</option>
+                        <option value="brincos">Brincos</option>
+                        <option value="aneis">Anéis</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Preço (MZN)</label>
+                    <input type="number" id="productPrice" required min="0">
+                </div>
+                
+                <div class="form-group">
+                    <label>Estoque</label>
+                    <input type="number" id="productStock" required min="0" value="10">
+                </div>
+                
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="productDesc"></textarea>
+                </div>
+                
+                <button type="submit" class="btn">💾 Salvar Produto</button>
+                <button type="button" class="btn btn-secondary" onclick="closeProductModal()">Cancelar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+    
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/258848066198?text=Olá! Tenho interesse nos produtos da Egnara Acessórios" target="_blank" class="whatsapp-float" title="Fale conosco no WhatsApp">
+        💬
+    </a>
+
+    <script>
+        // Credenciais Admin (REMOVER DEPOIS)
+        const ADMIN_EMAIL = "admin@egnara.co.mz";
+        const ADMIN_PASSWORD = "admin123";
+
+        // Dados
+        let products = JSON.parse(localStorage.getItem('egnara_products')) || [
+            { id: 1, name: "Conjunto U❤I", category: "colares", price: 1800, stock: 5, media: "1001259812.jpg", mediaType: "image" },
+            { id: 2, name: "Conjunto Gucci", category: "colares", price: 2000, stock: 6, media: "1001259813.jpg", mediaType: "image" },
+            { id: 3, name: "Conjunto Coração Vermelho", category: "colares", price: 1700, stock: 7, media: "1001259814.jpg", mediaType: "image" },
+            { id: 4, name: "Conjunto Coração Dourado", category: "colares", price: 1900, stock: 4, media: "1001259816.jpg", mediaType: "image" },
+            { id: 5, name: "Conjunto Gold Completo", category: "colares", price: 2200, stock: 3, media: "1001259817.jpg", mediaType: "image" },
+            { id: 6, name: "Pulseira Pingente", category: "pulseiras", price: 600, stock: 12, media: "1001259818.jpg", mediaType: "image" },
+            { id: 7, name: "Pulseira Flores", category: "pulseiras", price: 800, stock: 10, media: "1001259819.jpg", mediaType: "image" },
+            { id: 8, name: "Pulseira Flor Vermelha", category: "pulseiras", price: 700, stock: 8, media: "1001259820.jpg", mediaType: "image" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('egnara_cart')) || [];
+        let orders = JSON.parse(localStorage.getItem('egnara_orders')) || [];
+        let editingProductId = null;
+
+        // Inicializar
+        loadProducts();
+        updateCart();
+
+        // Carregar produtos na loja
+        function loadProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(p => `
+                <div class="product-card">
+                    ${p.mediaType === 'video' ? 
+                        `<video src="${p.media}" class="product-video" muted loop autoplay playsinline></video>` :
+                        `<img src="${p.media}" class="product-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22><rect fill=%22%23333%22 width=%22300%22 height=%22300%22/><text x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2220%22>💎</text></svg>'">`
+                    }
+                    <div class="product-info">
+                        <div class="product-category">${p.category}</div>
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-price">MZN ${p.price.toLocaleString()}</div>
+                        <button class="btn-add-cart" onclick="addToCart(${p.id})">🛒 Adicionar</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Carregar produtos no admin
+        function loadAdminProducts() {
+            const tbody = document.getElementById('productsTable');
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>
+                        ${p.mediaType === 'video' ? 
+                            `<video src="${p.media}" class="product-thumb" muted></video>` :
+                            `<img src="${p.media}" class="product-thumb" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22><rect fill=%22%23333%22 width=%2260%22 height=%2260%22/></svg>'">`
+                        }
+                    </td>
+                    <td>${p.name}</td>
+                    <td>${p.category}</td>
+                    <td>MZN ${p.price.toLocaleString()}</td>
+                    <td>${p.stock}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="btn-sm btn-edit" onclick="editProduct(${p.id})">✏️ Editar</button>
+                            <button class="btn-sm btn-delete" onclick="deleteProduct(${p.id})">🗑️ Deletar</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Carregar pedidos
+        function loadOrders() {
+            const tbody = document.getElementById('ordersTable');
+            tbody.innerHTML = orders.map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td>${o.customer}</td>
+                    <td>${o.items.length} items</td>
+                    <td>MZN ${o.total.toLocaleString()}</td>
+                    <td>
+                        <span style="background: rgba(212,175,55,0.2); padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.85rem;">
+                            ${o.paymentMethod || 'WhatsApp'}
+                        </span>
+                    </td>
+                    <td>${new Date(o.date).toLocaleDateString('pt-BR')}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Atualizar stats
+        function updateStats() {
+            document.getElementById('statProducts').textContent = products.length;
+            document.getElementById('statOrders').textContent = orders.length;
+            const totalSales = orders.reduce((sum, o) => sum + o.total, 0);
+            document.getElementById('statSales').textContent = `MZN ${totalSales.toLocaleString()}`;
+            const cartItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('statCart').textContent = cartItems;
+        }
+
+        // Adicionar ao carrinho
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            
+            saveCart();
+            updateCart();
+            showToast('✅ Produto adicionado ao carrinho!');
+        }
+
+        // Atualizar carrinho
+        function updateCart() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCount').textContent = count;
+            
+            const container = document.getElementById('cartItems');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 2rem;">Carrinho vazio</p>';
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.media}" class="cart-item-img" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22><rect fill=%22%23333%22 width=%2280%22 height=%2280%22/></svg>'">
+                        <div class="cart-item-info">
+                            <div style="font-weight: 600;">${item.name}</div>
+                            <div style="color: var(--gold);">MZN ${item.price.toLocaleString()}</div>
+                            <div class="cart-item-qty">
+                                <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+                                <span>${item.qty}</span>
+                                <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+                                <button class="qty-btn" onclick="removeFromCart(${item.id})" style="margin-left: auto; background: var(--danger); border-color: var(--danger); color: white;">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            document.getElementById('cartTotal').textContent = `MZN ${total.toLocaleString()}`;
+            updateStats();
+        }
+
+        function updateQty(id, change) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += change;
+                if (item.qty <= 0) removeFromCart(id);
+                else {
+                    saveCart();
+                    updateCart();
+                }
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            saveCart();
+            updateCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('egnara_cart', JSON.stringify(cart));
+        }
+
+        function toggleCart() {
+            document.getElementById('cartSidebar').classList.toggle('open');
+        }
+
+        // Checkout
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('❌ Carrinho vazio!');
+                return;
+            }
+            
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            // Preparar lista de produtos
+            let productsList = '';
+            cart.forEach(item => {
+                productsList += `• ${item.qty}x ${item.name} - MZN ${(item.price * item.qty).toLocaleString()}\n`;
+            });
+            
+            if (paymentMethod === 'whatsapp') {
+                // WhatsApp - Enviar pedido direto
+                const message = `Olá! Gostaria de fazer o seguinte pedido:\n\n${productsList}\n*Total: MZN ${total.toLocaleString()}*\n\nAguardo confirmação!`;
+                
+                saveOrder(total, 'WhatsApp');
+                window.open(`https://wa.me/258848066198?text=${encodeURIComponent(message)}`, '_blank');
+                clearCart();
+                showToast('✅ Pedido enviado via WhatsApp!');
+                
+            } else if (paymentMethod === 'mpesa') {
+                // M-Pesa - Mostrar instruções
+                showPaymentInstructions('mpesa', total, productsList);
+                
+            } else if (paymentMethod === 'emola') {
+                // eMola - Mostrar instruções
+                showPaymentInstructions('emola', total, productsList);
+            }
+        }
+        
+        function showPaymentInstructions(method, total, productsList) {
+            const modal = document.getElementById('paymentModal');
+            const title = document.getElementById('paymentTitle');
+            const content = document.getElementById('paymentContent');
+            
+            if (method === 'mpesa') {
+                title.textContent = '📱 Pagamento M-Pesa';
+                content.innerHTML = `
+                    <div style="background: var(--dark); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <h3 style="color: var(--gold); margin-bottom: 1rem;">Instruções de Pagamento</h3>
+                        <ol style="line-height: 2; padding-left: 1.5rem;">
+                            <li>Abra o app M-Pesa no seu telemóvel</li>
+                            <li>Selecione <strong>"Enviar Dinheiro"</strong></li>
+                            <li>Digite o número: <strong style="color: var(--gold);">+258 848066198</strong></li>
+                            <li>Insira o valor: <strong style="color: var(--gold);">MZN ${total.toLocaleString()}</strong></li>
+                            <li>Confirme o pagamento</li>
+                            <li>Clique em "Confirmar Pedido" abaixo</li>
+                        </ol>
+                    </div>
+                    <div style="background: rgba(212,175,55,0.1); padding: 1rem; border-radius: 8px; border: 1px solid var(--gold);">
+                        <strong>📦 Resumo do Pedido:</strong><br><br>
+                        ${productsList.replace(/\n/g, '<br>')}
+                        <br><strong style="color: var(--gold);">Total: MZN ${total.toLocaleString()}</strong>
+                    </div>
+                `;
+                
+            } else if (method === 'emola') {
+                title.textContent = '💳 Pagamento eMola';
+                content.innerHTML = `
+                    <div style="background: var(--dark); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem;">
+                        <h3 style="color: var(--gold); margin-bottom: 1rem;">Instruções de Pagamento</h3>
+                        <ol style="line-height: 2; padding-left: 1.5rem;">
+                            <li>Abra o app eMola no seu telemóvel</li>
+                            <li>Selecione <strong>"Enviar Dinheiro"</strong></li>
+                            <li>Digite o número: <strong style="color: var(--gold);">+258 848066198</strong></li>
+                            <li>Ou use o email: <strong style="color: var(--gold);">contato@egnara.co.mz</strong></li>
+                            <li>Insira o valor: <strong style="color: var(--gold);">MZN ${total.toLocaleString()}</strong></li>
+                            <li>Confirme o pagamento</li>
+                            <li>Clique em "Confirmar Pedido" abaixo</li>
+                        </ol>
+                    </div>
+                    <div style="background: rgba(212,175,55,0.1); padding: 1rem; border-radius: 8px; border: 1px solid var(--gold);">
+                        <strong>📦 Resumo do Pedido:</strong><br><br>
+                        ${productsList.replace(/\n/g, '<br>')}
+                        <br><strong style="color: var(--gold);">Total: MZN ${total.toLocaleString()}</strong>
+                    </div>
+                `;
+            }
+            
+            modal.classList.add('active');
+        }
+        
+        function confirmPayment() {
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            
+            // Preparar mensagem WhatsApp de confirmação
+            let productsList = '';
+            cart.forEach(item => {
+                productsList += `• ${item.qty}x ${item.name} - MZN ${(item.price * item.qty).toLocaleString()}\n`;
+            });
+            
+            const methodName = paymentMethod === 'mpesa' ? 'M-Pesa' : 'eMola';
+            const message = `Olá! Acabei de fazer um pagamento via ${methodName}:\n\n${productsList}\n*Total: MZN ${total.toLocaleString()}*\n\nPor favor, confirme o recebimento e envie meu pedido!`;
+            
+            // Salvar pedido
+            saveOrder(total, methodName);
+            
+            // Abrir WhatsApp para confirmação
+            window.open(`https://wa.me/258848066198?text=${encodeURIComponent(message)}`, '_blank');
+            
+            // Limpar carrinho e fechar modals
+            clearCart();
+            closePaymentModal();
+            showToast(`✅ Pedido confirmado via ${methodName}!`);
+        }
+        
+        function saveOrder(total, method) {
+            const order = {
+                id: Date.now(),
+                customer: `Cliente ${method}`,
+                items: [...cart],
+                total: total,
+                date: new Date().toISOString(),
+                paymentMethod: method
+            };
+            orders.push(order);
+            localStorage.setItem('egnara_orders', JSON.stringify(orders));
+        }
+        
+        function clearCart() {
+            cart = [];
+            saveCart();
+            updateCart();
+            toggleCart();
+        }
+        
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+        }
+
+        // Login
+        function openLogin() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                document.getElementById('loginModal').classList.remove('active');
+                document.getElementById('storeView').style.display = 'none';
+                document.getElementById('adminPanel').classList.add('active');
+                loadAdminProducts();
+                loadOrders();
+                updateStats();
+                showToast('✅ Bem-vindo ao painel!');
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+            return false;
+        }
+
+        function logout() {
+            document.getElementById('adminPanel').classList.remove('active');
+            document.getElementById('storeView').style.display = 'block';
+            showToast('👋 Até logo!');
+        }
+
+        // Admin Sections
+        function showSection(section) {
+            const sections = ['dashboard', 'products', 'orders', 'settings'];
+            sections.forEach(s => {
+                document.getElementById(s).classList.remove('active');
+            });
+            document.getElementById(section).classList.add('active');
+            
+            const menuItems = document.querySelectorAll('.admin-menu li');
+            menuItems.forEach(item => item.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const titles = {
+                dashboard: 'Dashboard',
+                products: 'Gerenciar Produtos',
+                orders: 'Pedidos',
+                settings: 'Configurações'
+            };
+            document.getElementById('sectionTitle').textContent = titles[section];
+            
+            if (section === 'products') loadAdminProducts();
+            if (section === 'orders') loadOrders();
+        }
+
+        // Product Modal
+        function openProductModal() {
+            editingProductId = null;
+            document.getElementById('productModalTitle').textContent = 'Adicionar Produto';
+            document.getElementById('productName').value = '';
+            document.getElementById('productCategory').value = 'colares';
+            document.getElementById('productPrice').value = '';
+            document.getElementById('productStock').value = '10';
+            document.getElementById('productDesc').value = '';
+            document.getElementById('mediaType').value = 'image';
+            document.getElementById('imagePreview').classList.remove('active');
+            document.getElementById('videoPreview').classList.remove('active');
+            document.getElementById('uploadText').style.display = 'block';
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+        }
+
+        function updateMediaInput() {
+            const type = document.getElementById('mediaType').value;
+            const input = document.getElementById('mediaFile');
+            input.accept = type === 'image' ? 'image/*' : 'video/*';
+        }
+
+        function previewMedia(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                const type = document.getElementById('mediaType').value;
+                
+                reader.onload = function(e) {
+                    if (type === 'image') {
+                        document.getElementById('imagePreview').src = e.target.result;
+                        document.getElementById('imagePreview').classList.add('active');
+                        document.getElementById('videoPreview').classList.remove('active');
+                    } else {
+                        document.getElementById('videoPreview').src = e.target.result;
+                        document.getElementById('videoPreview').classList.add('active');
+                        document.getElementById('imagePreview').classList.remove('active');
+                    }
+                    document.getElementById('uploadText').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            
+            const mediaType = document.getElementById('mediaType').value;
+            let mediaUrl = null;
+            
+            if (mediaType === 'image' && document.getElementById('imagePreview').classList.contains('active')) {
+                mediaUrl = document.getElementById('imagePreview').src;
+            } else if (mediaType === 'video' && document.getElementById('videoPreview').classList.contains('active')) {
+                mediaUrl = document.getElementById('videoPreview').src;
+            }
+            
+            const product = {
+                id: editingProductId || Date.now(),
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                price: parseInt(document.getElementById('productPrice').value),
+                stock: parseInt(document.getElementById('productStock').value),
+                description: document.getElementById('productDesc').value,
+                media: mediaUrl,
+                mediaType: mediaType
+            };
+            
+            if (editingProductId) {
+                const idx = products.findIndex(p => p.id === editingProductId);
+                products[idx] = product;
+                showToast('✅ Produto atualizado!');
+            } else {
+                products.push(product);
+                showToast('✅ Produto adicionado!');
+            }
+            
+            localStorage.setItem('egnara_products', JSON.stringify(products));
+            closeProductModal();
+            loadProducts();
+            loadAdminProducts();
+            updateStats();
+            return false;
+        }
+
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            editingProductId = id;
+            
+            document.getElementById('productModalTitle').textContent = 'Editar Produto';
+            document.getElementById('productName').value = product.name;
+            document.getElementById('productCategory').value = product.category;
+            document.getElementById('productPrice').value = product.price;
+            document.getElementById('productStock').value = product.stock;
+            document.getElementById('productDesc').value = product.description || '';
+            document.getElementById('mediaType').value = product.mediaType;
+            
+            if (product.media) {
+                if (product.mediaType === 'video') {
+                    document.getElementById('videoPreview').src = product.media;
+                    document.getElementById('videoPreview').classList.add('active');
+                    document.getElementById('imagePreview').classList.remove('active');
+                } else {
+                    document.getElementById('imagePreview').src = product.media;
+                    document.getElementById('imagePreview').classList.add('active');
+                    document.getElementById('videoPreview').classList.remove('active');
+                }
+                document.getElementById('uploadText').style.display = 'none';
+            }
+            
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Tem certeza que deseja deletar este produto?')) {
+                products = products.filter(p => p.id !== id);
+                localStorage.setItem('egnara_products', JSON.stringify(products));
+                loadProducts();
+                loadAdminProducts();
+                updateStats();
+                showToast('🗑️ Produto deletado!');
+            }
+        }
+
+        // Settings
+        function saveSettings() {
+            showToast('💾 Configurações salvas!');
+        }
+
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Fechar modals ao clicar fora
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
